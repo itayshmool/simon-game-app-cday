@@ -102,11 +102,24 @@ export const useSimonStore = create<SimonStore>((set, get) => ({
   initializeListeners: () => {
     console.log('🎮 Initializing Simon listeners');
     
+    // Get socket (it should be connected by now)
     const socket = socketService.getSocket();
-    if (!socket) {
-      console.error('❌ No socket connection');
+    if (!socket || !socket.connected) {
+      console.error('❌ Socket not connected yet, retrying...');
+      // Retry after a short delay
+      setTimeout(() => {
+        const retrySocket = socketService.getSocket();
+        if (retrySocket && retrySocket.connected) {
+          console.log('✅ Socket connected on retry, initializing listeners');
+          get().initializeListeners();
+        } else {
+          console.error('❌ Failed to connect socket after retry');
+        }
+      }, 100);
       return;
     }
+    
+    console.log('✅ Socket connected, setting up Simon listeners');
     
     // Listen for sequence display
     socket.on('simon:show_sequence', (data: { round: number; sequence: Color[] }) => {

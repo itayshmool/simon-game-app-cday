@@ -50,12 +50,12 @@ export function WaitingRoomPage() {
   useEffect(() => {
     console.log('🎮 WaitingRoomPage mounted');
     
-    // Initialize Simon listeners
-    initializeListeners();
-    
-    // Connect socket (CRITICAL FIX: Must call connect() first!)
+    // CRITICAL FIX: Connect socket FIRST, then initialize listeners
     const socket = socketService.connect();
     console.log('✅ Socket connected:', socket.connected);
+    
+    // Initialize Simon listeners AFTER socket is connected
+    initializeListeners();
     
     // Join room via socket
     if (gameCode && playerId) {
