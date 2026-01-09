@@ -172,7 +172,27 @@ If Cursor can't configure, do it manually:
 
 ---
 
-### 4.4 Test Online
+### 4.4 Save Your Deployment Configuration
+
+Let's save your deployment details so you can reference them later.
+
+**In Cursor chat, copy and paste:**
+
+```
+Create a .cursorrules-deployment file that documents my Render deployment: include the service names, URLs, and environment variables configuration. Get the actual values from Render.
+```
+
+Cursor will create a file with your deployment details like:
+- Backend URL
+- Frontend URL
+- Environment variables
+- Service IDs
+
+This is useful if you need to update or redeploy later!
+
+---
+
+### 4.5 Test Online
 
 1. Open your **frontend URL** in browser
 2. Create a game
