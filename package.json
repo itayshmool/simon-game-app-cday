@@ -6,6 +6,7 @@
   "scripts": {
     "setup": "bash setup.sh",
     "go": "npm run setup && npm run dev",
+    "publish": "bash publish.sh",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",

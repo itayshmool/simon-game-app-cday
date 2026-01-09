@@ -85,13 +85,21 @@ Now let's put your game online so anyone can play!
 
 ### 4.1 Create Your Own GitHub Repository
 
-You need your own copy of the code on GitHub.
+First, you need the code in YOUR GitHub account (not the workshop account).
 
-**In Cursor, open the chat (Cmd+L or Ctrl+L) and ask:**
+**Run this command:**
 
-> "Create a new public GitHub repository called simon-game-app under my account and push this code to it"
+```bash
+npm run publish
+```
 
-Cursor will handle everything. When done, verify at: `https://github.com/YOUR_USERNAME/simon-game-app`
+This will:
+1. ✅ Create a new repository in your GitHub account
+2. ✅ Push all the code to it
+
+When done, you'll see your repository URL: `https://github.com/YOUR_USERNAME/simon-game-app`
+
+> ⚠️ **First time?** If you see "GitHub CLI not installed", ask Cursor: "Help me install GitHub CLI and login"
 
 ---
 
