@@ -146,18 +146,32 @@ Once deployed (green checkmarks), find your URLs:
 
 ### 4.4 Configure Environment Variables
 
-#### Backend Service:
-1. Click **simon-game-backend** → **Environment** (left sidebar)
+**In Cursor chat, ask:**
+
+> "Configure the environment variables for my Render services. Set FRONTEND_URL on the backend to [YOUR_FRONTEND_URL] and set VITE_API_URL and VITE_SOCKET_URL on the frontend to [YOUR_BACKEND_URL]"
+
+Replace `[YOUR_FRONTEND_URL]` and `[YOUR_BACKEND_URL]` with your actual URLs from step 4.3.
+
+Cursor will update both services automatically.
+
+⏳ Wait for redeploy (green checkmark in Render dashboard).
+
+---
+
+### 4.4 Alternative: Configure Manually
+
+If Cursor can't configure, do it manually:
+
+**Backend Service:**
+1. Go to Render dashboard → **simon-game-backend** → **Environment**
 2. Set `FRONTEND_URL` = your frontend URL
 3. Click **Save Changes**
 
-#### Frontend Service:
-1. Click **simon-game-frontend** → **Environment** (left sidebar)
+**Frontend Service:**
+1. Go to Render dashboard → **simon-game-frontend** → **Environment**
 2. Set `VITE_API_URL` = your backend URL
 3. Set `VITE_SOCKET_URL` = your backend URL
 4. Click **Save Changes**
-
-⏳ Wait for redeploy (green checkmark).
 
 ---
 
