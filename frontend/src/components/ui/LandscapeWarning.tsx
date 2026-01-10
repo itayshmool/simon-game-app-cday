@@ -2,7 +2,7 @@
  * Landscape Warning Component
  * 
  * Shows a full-screen overlay when device is in landscape orientation
- * on small screens (mobile phones). Encourages users to rotate to portrait.
+ * on mobile phones only. Desktop users are not affected.
  */
 
 export function LandscapeWarning() {
@@ -24,12 +24,13 @@ export function LandscapeWarning() {
       </div>
       
       <style>{`
-        /* Show warning only on landscape mobile devices */
+        /* Show warning only on landscape MOBILE devices (touch + small screen) */
         .landscape-warning {
           display: none;
         }
         
-        @media (orientation: landscape) and (max-height: 500px) {
+        /* Only show on touch devices in landscape with very small height (phones) */
+        @media (orientation: landscape) and (max-height: 450px) and (hover: none) and (pointer: coarse) {
           .landscape-warning {
             display: flex;
             position: fixed;
