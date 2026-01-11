@@ -4,8 +4,8 @@
   "description": "Multiplayer Simon Says game with real-time WebSocket communication",
   "main": "dist/backend/server.js",
   "scripts": {
-    "setup": "bash setup.sh",
-    "go": "bash setup.sh",
+    "setup": "bash setup_new.sh",
+    "go": "bash setup_new.sh",
     "publish": "bash publish.sh",
     "test": "vitest",
     "test:run": "vitest run",
