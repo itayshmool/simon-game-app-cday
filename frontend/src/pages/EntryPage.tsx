@@ -1,20 +1,117 @@
 /**
  * Entry Page
  * 
- * - Landing: Only "Create Game" button
- * - Invite link (?join=CODE): Direct to join form
+ * Vibrant game-inspired design with Simon board SVG
  */
 
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { createSession, joinGame } from '../services/authService';
 import { useAuthStore } from '../store/authStore';
+import { SimonSplashScreen } from '../components/ui/SimonSplashScreen';
+
+// SVG Simon Board Component (used in form)
+function SimonBoardSVG({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 200 200" className={className}>
+      {/* Outer ring */}
+      <circle cx="100" cy="100" r="95" fill="#1a1a2e" stroke="#2d2d44" strokeWidth="4"/>
+      
+      {/* Green quadrant (top-left) */}
+      <path
+        d="M 100 100 L 100 15 A 85 85 0 0 0 15 100 Z"
+        fill="#22c55e"
+        className="drop-shadow-lg"
+      />
+      
+      {/* Red quadrant (top-right) */}
+      <path
+        d="M 100 100 L 185 100 A 85 85 0 0 0 100 15 Z"
+        fill="#ef4444"
+        className="drop-shadow-lg"
+      />
+      
+      {/* Blue quadrant (bottom-right) */}
+      <path
+        d="M 100 100 L 100 185 A 85 85 0 0 0 185 100 Z"
+        fill="#3b82f6"
+        className="drop-shadow-lg"
+      />
+      
+      {/* Yellow quadrant (bottom-left) */}
+      <path
+        d="M 100 100 L 15 100 A 85 85 0 0 0 100 185 Z"
+        fill="#eab308"
+        className="drop-shadow-lg"
+      />
+      
+      {/* Center circle with glow */}
+      <circle cx="100" cy="100" r="30" fill="#1a1a2e"/>
+      <circle cx="100" cy="100" r="28" fill="none" stroke="#22c55e" strokeWidth="2" opacity="0.8"/>
+      <circle cx="100" cy="100" r="25" fill="#0f0f1a"/>
+      
+      {/* SIMON text */}
+      <text
+        x="100"
+        y="105"
+        textAnchor="middle"
+        fill="white"
+        fontSize="12"
+        fontWeight="bold"
+        fontFamily="system-ui"
+        letterSpacing="2"
+      >
+        SIMON
+      </text>
+    </svg>
+  );
+}
+
+// Sparkle component (used in form background)
+function Sparkles() {
+  const sparklePositions = [
+    { left: '10%', top: '15%', delay: '0s' },
+    { left: '85%', top: '20%', delay: '0.3s' },
+    { left: '20%', top: '75%', delay: '0.6s' },
+    { left: '90%', top: '70%', delay: '0.9s' },
+    { left: '5%', top: '45%', delay: '1.2s' },
+    { left: '95%', top: '45%', delay: '1.5s' },
+    { left: '30%', top: '10%', delay: '0.2s' },
+    { left: '70%', top: '85%', delay: '0.8s' },
+    { left: '15%', top: '90%', delay: '1.1s' },
+    { left: '80%', top: '5%', delay: '0.5s' },
+  ];
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {sparklePositions.map((pos, i) => (
+        <div
+          key={i}
+          className="absolute animate-pulse"
+          style={{
+            left: pos.left,
+            top: pos.top,
+            animationDelay: pos.delay,
+            animationDuration: '2s',
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20">
+            <path
+              d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z"
+              fill="white"
+              opacity="0.7"
+            />
+          </svg>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export function EntryPage() {
   const [searchParams] = useSearchParams();
   const joinCode = searchParams.get('join')?.toUpperCase() || null;
   
-  // If invite link, go straight to join form; otherwise show landing
   const [showForm, setShowForm] = useState(!!joinCode);
   const [displayName, setDisplayName] = useState('');
   const [avatarId, setAvatarId] = useState('1');
@@ -33,11 +130,9 @@ export function EntryPage() {
 
     try {
       if (isJoining) {
-        // Join existing game via invite link
         const response = await joinGame(displayName, avatarId, joinCode);
         setSession(response.session);
       } else {
-        // Create new game
         const response = await createSession(displayName, avatarId);
         setSession(response.session);
       }
@@ -49,53 +144,62 @@ export function EntryPage() {
     }
   };
 
-  // Landing page - only "Create Game" button
+  // Landing page with Simon splash screen
   if (!showForm) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center p-3 sm:p-4">
-        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 max-w-md w-full">
-          <h1 className="text-3xl sm:text-4xl font-bold text-center mb-2">🎮 Simon Says</h1>
-          <p className="text-gray-600 text-center mb-6 sm:mb-8 text-sm sm:text-base">Color Race Edition</p>
-          
-          <button
-            onClick={() => setShowForm(true)}
-            className="w-full bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-98 text-white font-bold py-3 sm:py-4 px-6 rounded-lg sm:rounded-xl transition-all duration-75 text-base sm:text-lg min-h-[56px]"
-            style={{ touchAction: 'manipulation' }}
-          >
-            Create Game
-          </button>
-        </div>
-      </div>
-    );
+    return <SimonSplashScreen onCreateGame={() => setShowForm(true)} />;
   }
 
-  // Form - for both creating and joining (via invite link)
+  // Form for creating or joining
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center p-3 sm:p-4">
-      <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 max-w-md w-full">
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
+      {/* Rainbow swirl background */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: `
+            conic-gradient(
+              from 0deg at 50% 50%,
+              #22c55e 0deg,
+              #eab308 90deg,
+              #3b82f6 180deg,
+              #ef4444 270deg,
+              #22c55e 360deg
+            )
+          `,
+        }}
+      />
+      <div className="absolute inset-0 bg-black/40" />
+      <Sparkles />
+      
+      <div className="relative z-10 bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 sm:p-8 max-w-md w-full">
         {!isJoining && (
           <button
             onClick={() => setShowForm(false)}
-            className="text-gray-600 hover:text-gray-800 active:text-gray-900 mb-4 text-sm sm:text-base"
+            className="text-gray-500 hover:text-gray-700 mb-4 text-sm font-medium"
           >
             ← Back
           </button>
         )}
         
-        <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">
+        {/* Mini Simon board */}
+        <div className="flex justify-center mb-4">
+          <SimonBoardSVG className="w-20 h-20" />
+        </div>
+        
+        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
           {isJoining ? 'Join Game' : 'Create Game'}
         </h2>
         
         {isJoining && (
-          <div className="bg-blue-50 border border-blue-200 text-blue-800 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm mb-4">
-            🎮 Joining game: <span className="font-mono font-bold">{joinCode}</span>
+          <div className="bg-blue-50 border-2 border-blue-200 text-blue-800 px-4 py-3 rounded-xl text-sm mb-5 text-center">
+            🎮 Joining game: <span className="font-mono font-bold text-lg">{joinCode}</span>
           </div>
         )}
         
-        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
-              Display Name
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Your Name
             </label>
             <input
               type="text"
@@ -106,35 +210,35 @@ export function EntryPage() {
               maxLength={12}
               required
               autoFocus
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent text-sm sm:text-base"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 text-lg transition-all"
             />
           </div>
           
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
-              Avatar
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Choose Avatar
             </label>
-            <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
-              {['1', '2', '3', '4', '5', '6', '7', '8'].map((id) => (
+            <div className="grid grid-cols-4 gap-2">
+              {['😀', '🎮', '🚀', '⚡', '🎨', '🎯', '🏆', '🌟'].map((emoji, i) => (
                 <button
-                  key={id}
+                  key={i}
                   type="button"
-                  onClick={() => setAvatarId(id)}
-                  className={`p-2.5 sm:p-4 rounded-lg border-2 transition-all duration-75 active:scale-95 min-h-[56px] min-w-[56px] ${
-                    avatarId === id
-                      ? 'border-purple-600 bg-purple-50'
-                      : 'border-gray-200 hover:border-gray-300 active:border-gray-400'
+                  onClick={() => setAvatarId(String(i + 1))}
+                  className={`p-3 rounded-xl border-2 transition-all duration-100 text-2xl min-h-[56px] ${
+                    avatarId === String(i + 1)
+                      ? 'border-green-500 bg-green-50 scale-105 shadow-md'
+                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                   }`}
                   style={{ touchAction: 'manipulation' }}
                 >
-                  <span className="text-2xl sm:text-3xl">{['😀', '🎮', '🚀', '⚡', '🎨', '🎯', '🏆', '🌟'][parseInt(id) - 1]}</span>
+                  {emoji}
                 </button>
               ))}
             </div>
           </div>
           
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-800 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm">
+            <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
               {error}
             </div>
           )}
@@ -142,10 +246,14 @@ export function EntryPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-98 disabled:bg-gray-400 text-white font-bold py-3 sm:py-4 px-6 rounded-lg sm:rounded-xl transition-all duration-75 text-base sm:text-lg min-h-[56px]"
+            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 
+                       disabled:from-gray-400 disabled:to-gray-500
+                       text-white font-bold py-4 px-6 rounded-xl 
+                       shadow-lg hover:shadow-xl active:scale-[0.98]
+                       transition-all duration-100 text-lg min-h-[56px]"
             style={{ touchAction: 'manipulation' }}
           >
-            {loading ? 'Loading...' : isJoining ? 'Join Game' : 'Create Game'}
+            {loading ? 'Loading...' : isJoining ? '🎮 Join Game' : '🎮 Create Game'}
           </button>
         </form>
       </div>
